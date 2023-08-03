@@ -1,5 +1,6 @@
 package com.coffee_shop.coffeeshop.service;
 
+import com.coffee_shop.coffeeshop.exception.CoffeeShopNotFoundExecption;
 import com.coffee_shop.coffeeshop.model.CoffeeEntity;
 import com.coffee_shop.coffeeshop.repository.CoffeeShopRepository;
 import org.springframework.stereotype.Service;
@@ -18,12 +19,18 @@ public class CoffeeShopServiceImpl implements CoffeeShopService{
 
     @Override
     public CoffeeEntity getCoffeeById(String coffeeId) {
+        if (coffeeShopRepository.findById(coffeeId).isEmpty()) {
+            throw new CoffeeShopNotFoundExecption("Can't find Coffee Id");
+        }
         return coffeeShopRepository.findById(coffeeId).get();
     }
 
 
     @Override
     public List<CoffeeEntity> getAllCoffees(CoffeeEntity coffeeEntity) {
+        if (coffeeShopRepository.findAll().isEmpty()) {
+            throw new CoffeeShopNotFoundExecption("Don't have any coffee in the database");
+        }
         return coffeeShopRepository.findAll();
     }
 
@@ -35,13 +42,16 @@ public class CoffeeShopServiceImpl implements CoffeeShopService{
     }
 
     @Override
-    public String updateCoffee(CoffeeEntity coffeeEntity) {
+    public String updateCoffee(@RequestBody CoffeeEntity coffeeEntity) {
         coffeeShopRepository.save(coffeeEntity);
         return "Updated successful";
     }
 
     @Override
     public String deleteCoffee(String coffeeId) {
+        if (coffeeShopRepository.findById(coffeeId).isEmpty()) {
+            throw new CoffeeShopNotFoundExecption("Can't find Id to delete");
+        }
         coffeeShopRepository.deleteById(coffeeId);
         return "Deleted successful";
     }
